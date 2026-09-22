@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Contacts - Katy Perry EXPERIENCE by Karen La Gioia</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js" defer></script>
+<script src="email-templates.js" defer></script>
+<script src="app.js" defer></script>
+</head>
+<body>
+<header>
+  <img class="header-logo" src="assets/Logo.png" alt="Katy Perry EXPERIENCE by Karen La Gioia" />
+  <p class="welcome-message" id="welcome-message" hidden></p>
+  <button class="sign-out" id="sign-out-btn" type="button" hidden>Se déconnecter</button>
+</header>
+
+<main id="auth-view" class="auth-layout">
+  <section class="auth-card">
+    <div class="auth-tabs" role="tablist" aria-label="Accès au compte">
+      <button class="auth-tab active" id="sign-in-tab" type="button" role="tab" aria-selected="true">Connexion</button>
+      <button class="auth-tab" id="sign-up-tab" type="button" role="tab" aria-selected="false">Inscription</button>
+    </div>
+    <form id="auth-form" autocomplete="on">
+      <h1 id="auth-title">Connexion</h1>
+      <p id="auth-description">Accédez à la base de contacts.</p>
+      <div id="display-name-field" hidden>
+        <label for="auth-display-name">Nom d'utilisateur</label>
+        <input id="auth-display-name" type="text" autocomplete="nickname" maxlength="60" />
+      </div>
+      <label for="auth-email">Adresse e-mail</label>
+      <input id="auth-email" type="email" autocomplete="email" required maxlength="120" />
+      <label for="auth-password">Mot de passe</label>
+      <input id="auth-password" type="password" autocomplete="current-password" required minlength="8" />
+      <p class="auth-message" id="auth-message" role="status"></p>
+      <button class="btn-primary auth-submit" id="auth-submit" type="submit">Se connecter</button>
+    </form>
+  </section>
+</main>
+
+<main id="app-view" hidden>
+  <section class="card no-print">
+    <h2 id="form-title">Ajouter un contact dans la base &amp; suivi des envois d'e-mails</h2>
+    <form id="contact-form" autocomplete="off">
+      <input type="hidden" id="id" />
+      <div class="grid">
+        <div><label for="prenom">Prénom *</label><input id="prenom" required maxlength="60" /></div>
+        <div><label for="nom">Nom *</label><input id="nom" required maxlength="60" /></div>
+        <div><label for="email">Adresse e-mail *</label><input id="email" type="email" required maxlength="120" pattern="[^\s@]+@[^\s@]+\.[^\s@]{2,}" title="Saisissez une adresse e-mail valide, par exemple nom@domaine.fr" /></div>
+        <div>
+          <label for="qualite">Qualité de la personne *</label>
+          <select id="qualite" required>
+            <option value="">— Choisir —</option>
+            <option>Officiels / Programmateurs / Élus</option>
+            <option>Partenaires et professionnels</option>
+            <option>Famille, amis et proches</option>
+          </select>
+        </div>
+        <div>
+          <label for="responsable">Chargé(e) de l'envoi du mail *</label>
+          <select id="responsable" required>
+            <option value="">— Choisir —</option>
+          </select>
+        </div>
+        <div class="row-check">
+          <input type="checkbox" id="envoye" />
+          <label for="envoye">Mail envoyé</label>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn-primary" id="submit-btn">Enregistrer</button>
+        <button type="button" class="btn-ghost" id="reset-btn">Annuler / vider le formulaire</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="stats">
+    <div class="stat"><b id="s-total">0</b><span>Contacts</span></div>
+    <div class="stat"><b id="s-sent">0</b><span>Mails envoyés</span></div>
+    <div class="stat"><b id="s-todo">0</b><span>À envoyer</span></div>
+    <div class="stat"><b id="s-rate">0 %</b><span>Avancement</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Contenu de la base</h2>
+    <div class="toolbar no-print">
+      <input id="search" placeholder="Rechercher (nom, e-mail…)" />
+      <select id="f-qualite"><option value="">Toutes les qualités</option></select>
+      <select id="f-resp"><option value="">Tous les chargés d'envoi</option></select>
+      <select id="f-envoye">
+        <option value="">Envoyés et non envoyés</option>
+        <option value="1">Mail envoyé</option>
+        <option value="0">Mail non envoyé</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nom</th><th>Prénom</th><th>E-mail</th><th>Qualité</th>
+            <th>Chargé(e) d'envoi</th><th>Mail envoyé</th><th>Date d'envoi</th><th class="no-print">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="empty">Aucun contact enregistré pour le moment.</div>
+    </div>
+    <div class="actions no-print">
+      <button class="btn-ghost" id="csv-btn">⬇︎ Export CSV (Excel)</button>
+      <button class="btn-ghost" id="json-btn">⬇︎ Sauvegarde JSON</button>
+      <button class="btn-ghost" onclick="window.print()">🖨 Imprimer / PDF</button>
+      <button class="btn-danger" id="wipe-btn" hidden>Effacer mes contacts</button>
+    </div>
+  </section>
+</main>
+
+<footer id="app-footer" hidden>
+  Données enregistrées dans Supabase — pensez à exporter régulièrement une sauvegarde JSON.
+</footer>
+
+<div class="toast" id="toast"></div>
+</body>
+</html>
