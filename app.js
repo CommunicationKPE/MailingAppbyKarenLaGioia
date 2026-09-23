@@ -82,6 +82,7 @@
 			id: row.id,
 			nom: row.nom,
 			prenom: row.prenom,
+			genre: row.genre === "F" ? "F" : "M",
 			email: row.email,
 			qualite: row.qualite,
 			responsable: row.responsable,
@@ -96,6 +97,7 @@
 		const row = {
 			nom: record.nom,
 			prenom: record.prenom,
+			genre: record.genre === "F" ? "F" : "M",
 			email: record.email,
 			qualite: record.qualite,
 			responsable: record.responsable,
@@ -154,9 +156,13 @@
 
 	function getMailTemplate(contact) {
 		const template = EMAIL_TEMPLATES[contact.qualite] || EMAIL_TEMPLATES.default;
+		const feminin = contact.genre === "F";
 		const replaceVariables = (value) => value
 			.replaceAll("{prenom}", contact.prenom)
 			.replaceAll("{nom}", contact.nom)
+			.replaceAll("{civilite}", feminin ? "Madame" : "Monsieur")
+			.replaceAll("{cher}", feminin ? "Chère" : "Cher")
+			.replaceAll("{e}", feminin ? "e" : "")
 			.replaceAll("{responsableNom}", responsibleLastNames.get(contact.responsable) || "")
 			.replaceAll("{responsable}", contact.responsable);
 		return {
@@ -188,6 +194,7 @@
 				return '<tr>' +
 			'<td><strong>' + esc(r.nom) + '</strong></td>' +
 			'<td>' + esc(r.prenom) + '</td>' +
+			'<td class="genre"><abbr title="' + (r.genre === "F" ? "Féminin" : "Masculin") + '">' + (r.genre === "F" ? "♀" : "♂") + '</abbr></td>' +
 			'<td>' + email + '</td>' +
 			'<td><span class="tag">' + esc(r.qualite) + '</span></td>' +
 			'<td>' + esc(r.responsable) + '</td>' +
@@ -224,16 +231,19 @@
 
 	/* ---------- Formulaire ---------- */
 	const FORM_FIELDS = ["nom", "prenom", "email", "qualite", "responsable", "envoye"];
+	const getGenre = () => ($("genre-f").checked ? "F" : "M");
+	const setGenre = (value) => { $(value === "F" ? "genre-f" : "genre-m").checked = true; };
 	let formSnapshot = null;
 	function getFormSnapshot() {
 		const snap = {};
 		FORM_FIELDS.forEach((id) => { const el = $(id); snap[id] = el.type === "checkbox" ? el.checked : el.value; });
+		snap.genre = getGenre();
 		return snap;
 	}
 	function updateSubmitButtonState() {
-		const dirty = !!formSnapshot && FORM_FIELDS.some((id) => $(id).type === "checkbox"
+		const dirty = !!formSnapshot && (formSnapshot.genre !== getGenre() || FORM_FIELDS.some((id) => $(id).type === "checkbox"
 			? $(id).checked !== formSnapshot[id]
-			: $(id).value !== formSnapshot[id]);
+			: $(id).value !== formSnapshot[id]));
 		const valid = $("contact-form").checkValidity() && isValidEmail($("email").value.trim());
 		$("submit-btn").classList.toggle("dirty", dirty && valid);
 	}
@@ -267,6 +277,7 @@
 		const rec = {
 			nom: $("nom").value.trim().toUpperCase(),
 			prenom: normalizePrenom($("prenom").value),
+			genre: getGenre(),
 			email: email,
 			qualite: $("qualite").value,
 			responsable: $("responsable").value.trim(),
@@ -312,6 +323,7 @@
 		} else if (btn.dataset.act === "edit") {
 			editingId = r.id;
 			$("nom").value = r.nom; $("prenom").value = r.prenom; $("email").value = r.email;
+			setGenre(r.genre);
 			$("qualite").value = r.qualite; $("responsable").value = r.responsable; $("envoye").checked = !!r.envoye;
 			$("form-title").textContent = "Modifier : " + r.prenom + " " + r.nom;
 			$("submit-btn").textContent = "Mettre à jour";
@@ -338,10 +350,10 @@
 	}
 
 	$("csv-btn").addEventListener("click", function () {
-		const head = ["Nom", "Prénom", "E-mail", "Qualité", "Chargé(e) de l'envoi", "Mail envoyé", "Date d'envoi"];
+		const head = ["Nom", "Prénom", "Genre", "E-mail", "Qualité", "Chargé(e) de l'envoi", "Mail envoyé", "Date d'envoi"];
 		const cell = (v) => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
 		const csv = [head.join(";")].concat(filtered().map((r) =>
-			[r.nom, r.prenom, r.email, r.qualite, r.responsable, r.envoye ? "Oui" : "Non", fr(r.dateEnvoi)]
+			[r.nom, r.prenom, r.genre === "F" ? "Féminin" : "Masculin", r.email, r.qualite, r.responsable, r.envoye ? "Oui" : "Non", fr(r.dateEnvoi)]
 				.map(cell).join(";"))).join("\r\n");
 		download("kpe-contacts-" + today() + ".csv", "\uFEFF" + csv, "text/csv;charset=utf-8");
 	});
