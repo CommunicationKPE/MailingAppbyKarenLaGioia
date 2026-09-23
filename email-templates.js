@@ -1,9 +1,12 @@
+const AFFICHE_URL = "https://communicationkpe.github.io/MailingAppbyKarenLaGioia/assets/affiche%20Bunker-Paillettes.png";
+
 const EMAIL_TEMPLATES = {
 	"Officiels / Programmateurs / Élus": {
 		subject: "Invitation personnelle – Soirée de lancement de Katy Perry EXPERIENCE by Karen La Gioia",
 		body: "Madame, Monsieur,\n\n" +
 			"Nous avons le plaisir de vous inviter à découvrir Katy Perry EXPERIENCE.\n\n" +
 			"Nous serions honorés de vous compter parmi nos invités.\n\n" +
+			"Le carton d'invitation est à consulter ici :\n" + AFFICHE_URL + "\n\n" +
 			"Bien cordialement,\n{responsable}"
 	},
 	"Partenaires et professionnels": {
@@ -11,6 +14,7 @@ const EMAIL_TEMPLATES = {
 		body: "Bonjour {prenom},\n\n" +
 			"Nous avons le plaisir de vous inviter à Katy Perry EXPERIENCE.\n\n" +
 			"Ce serait un plaisir de vous retrouver à cette occasion et d'échanger autour du projet.\n\n" +
+			"Le carton d'invitation est à consulter ici :\n" + AFFICHE_URL + "\n\n" +
 			"Bien cordialement,\n{responsable}"
 	},
 	"Famille, amis et proches": {
@@ -23,7 +27,7 @@ const EMAIL_TEMPLATES = {
 			"J'aimerais vraiment que tu sois là, avec nous.\n" +
 			"Parce que cette soirée représente énormément après tout le chemin parcouru.\n" +
 			"Et parce que j'ai envie de partager ce moment avec ceux qui nous soutiennent depuis le début.\n\n" +
-			"Tu trouveras en pièce jointe un carton d'invitation.\n" +
+			"Tu trouveras le carton d'invitation ici :\n" + AFFICHE_URL + "\n" +
 			"L'entrée est gratuite.\n\n" +
 			"J'espère avoir le plaisir de t’y retrouver le 28 novembre.\n" +			
 			"À très bientôt,\n\n{responsable} \n Pour le projet : Katy Perry EXPERIENCE by Karen La Gioia"
@@ -32,6 +36,7 @@ const EMAIL_TEMPLATES = {
 		subject: "Invitation Katy Perry EXPERIENCE",
 		body: "Bonjour {prenom},\n\n" +
 			"Nous avons le plaisir de vous inviter...\n\n" +
+			"Le carton d'invitation est à consulter ici :\n" + AFFICHE_URL + "\n\n" +
 			"Bien cordialement,\n{responsable}"
 	}
 };
