@@ -137,76 +137,32 @@
 		if (values.includes(cur)) sel.value = cur;
 	}
 
+	const responsibleLastNames = new Map();
+
 	async function loadResponsibles() {
 		const { data: profiles, error } = await supabaseClient
 			.from("profiles")
-			.select("first_name")
+			.select("first_name, display_name")
 			.order("first_name");
 		if (error) throw error;
-		fillSelect($("responsable"), profiles.map((profile) => profile.first_name).filter(Boolean));
+		responsibleLastNames.clear();
+		profiles.forEach((profile) => {
+			if (profile.first_name) responsibleLastNames.set(profile.first_name, profile.display_name || "");
+		});
+		fillSelect($("responsable"), [...responsibleLastNames.keys()]);
 	}
 
 	function getMailTemplate(contact) {
 		const template = EMAIL_TEMPLATES[contact.qualite] || EMAIL_TEMPLATES.default;
 		const replaceVariables = (value) => value
 			.replaceAll("{prenom}", contact.prenom)
+			.replaceAll("{nom}", contact.nom)
+			.replaceAll("{responsableNom}", responsibleLastNames.get(contact.responsable) || "")
 			.replaceAll("{responsable}", contact.responsable);
 		return {
 			subject: replaceVariables(template.subject),
 			body: replaceVariables(template.body)
 		};
-	}
-
-	/* ---------- Message .eml avec pièce jointe ---------- */
-	const MAIL_ATTACHMENT = {
-		url: "assets/affiche Bunker-Paillettes.png",
-		filename: "Invitation-Katy-Perry-Experience.png",
-		mimeType: "image/png"
-	};
-	let attachmentBase64 = null;
-
-	function toBase64(bytes) {
-		let binary = "";
-		for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-		return btoa(binary);
-	}
-	const wrap76 = (b64) => b64.replace(/.{1,76}/g, "$&\r\n");
-	const encodeHeader = (value) => "=?UTF-8?B?" + toBase64(new TextEncoder().encode(value)) + "?=";
-
-	async function getAttachmentBase64() {
-		if (attachmentBase64 === null) {
-			const response = await fetch(MAIL_ATTACHMENT.url);
-			if (!response.ok) throw new Error("Affiche introuvable (" + response.status + ")");
-			attachmentBase64 = toBase64(new Uint8Array(await response.arrayBuffer()));
-		}
-		return attachmentBase64;
-	}
-
-	async function buildEml(contact) {
-		const mail = getMailTemplate(contact);
-		const attachment = await getAttachmentBase64();
-		const boundary = "kpe-" + Date.now().toString(36);
-		return [
-			"To: " + contact.email,
-			"Subject: " + encodeHeader(mail.subject),
-			"Date: " + new Date().toUTCString(),
-			"MIME-Version: 1.0",
-			'Content-Type: multipart/mixed; boundary="' + boundary + '"',
-			"",
-			"--" + boundary,
-			'Content-Type: text/plain; charset="UTF-8"',
-			"Content-Transfer-Encoding: base64",
-			"",
-			wrap76(toBase64(new TextEncoder().encode(mail.body))),
-			"--" + boundary,
-			'Content-Type: ' + MAIL_ATTACHMENT.mimeType + '; name="' + MAIL_ATTACHMENT.filename + '"',
-			'Content-Disposition: attachment; filename="' + MAIL_ATTACHMENT.filename + '"',
-			"Content-Transfer-Encoding: base64",
-			"",
-			wrap76(attachment),
-			"--" + boundary + "--",
-			""
-		].join("\r\n");
 	}
 
 	function render() {
@@ -224,14 +180,11 @@
 				const toggleBtn = isLinkClickable
 					? '<button class="btn-mini' + (r.envoye ? "" : " btn-to-send") + '" data-act="toggle" data-id="' + r.id + '">' + (r.envoye ? "↩︎ Non envoyé" : "✓ Envoyé") + '</button> '
 					: "";
-				const emlBtn = isLinkClickable
-					? '<button class="btn-mini" data-act="eml" data-id="' + r.id + '" title="Télécharger le message avec l’affiche en pièce jointe">📎 Avec affiche</button> '
-					: "";
 				const ownerActions = r.userId === currentUser.id
 					? '<button class="btn-mini" data-act="edit" data-id="' + r.id + '">Modifier</button> ' +
 						'<button class="btn-mini btn-danger" data-act="del" data-id="' + r.id + '">Suppr.</button>'
 					: "";
-				const actions = toggleBtn + emlBtn + ownerActions;
+				const actions = toggleBtn + ownerActions;
 				return '<tr>' +
 			'<td><strong>' + esc(r.nom) + '</strong></td>' +
 			'<td>' + esc(r.prenom) + '</td>' +
@@ -356,18 +309,6 @@
 				.update(toDatabaseRow(r)).eq("id", r.id);
 			if (error) { r.envoye = !r.envoye; r.dateEnvoi = r.envoye ? today() : ""; showDatabaseError(error); return; }
 			render(); toast(r.envoye ? "Marqué comme envoyé" : "Marqué comme non envoyé");
-		} else if (btn.dataset.act === "eml") {
-			btn.disabled = true;
-			try {
-				const eml = await buildEml(r);
-				download("invitation-" + r.nom + "-" + r.prenom + ".eml", eml, "message/rfc822");
-				toast("Message téléchargé : ouvrez-le dans votre logiciel de messagerie");
-			} catch (error) {
-				console.error(error);
-				alert("Impossible de préparer le message : " + error.message);
-			} finally {
-				btn.disabled = false;
-			}
 		} else if (btn.dataset.act === "edit") {
 			editingId = r.id;
 			$("nom").value = r.nom; $("prenom").value = r.prenom; $("email").value = r.email;
@@ -410,7 +351,7 @@
 	});
 
 	$("wipe-btn").addEventListener("click", async function () {
-		if (!confirm("Effacer uniquement les contacts que vous avez créés ? Exportez une sauvegarde avant.")) return;
+		if (!confirm("ATTENTION ! Effacer tous les contacts que vous avez créés ? Exportez une sauvegarde avant. car cette action est irréversible.")) return;
 		const { error } = await supabaseClient.from("contacts").delete().eq("user_id", currentUser.id);
 		if (error) { showDatabaseError(error); return; }
 		data = data.filter((contact) => contact.userId !== currentUser.id);
