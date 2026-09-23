@@ -31,7 +31,9 @@
       <h1 id="auth-title">Connexion</h1>
       <p id="auth-description">Accédez à la base de contacts.</p>
       <div id="display-name-field" hidden>
-        <label for="auth-display-name">Nom d'utilisateur</label>
+        <label for="auth-first-name">Prénom</label>
+        <input id="auth-first-name" type="text" autocomplete="given-name" maxlength="60" />
+        <label for="auth-display-name">Nom</label>
         <input id="auth-display-name" type="text" autocomplete="nickname" maxlength="60" />
       </div>
       <label for="auth-email">Adresse e-mail</label>

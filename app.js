@@ -40,6 +40,7 @@
 			: "Accédez à la base de contacts.";
 		$("display-name-field").hidden = !signUp;
 		$("auth-display-name").required = signUp;
+		$("auth-first-name").required = signUp;
 		$("auth-password").autocomplete = signUp ? "new-password" : "current-password";
 		$("auth-submit").textContent = signUp ? "Créer mon compte" : "Se connecter";
 		showAuthMessage("");
@@ -47,7 +48,7 @@
 
 	async function showApplication(user) {
 		currentUser = user;
-		const displayName = user.user_metadata.display_name || user.email;
+		const displayName = user.user_metadata.first_name || user.user_metadata.display_name || user.email;
 		$("welcome-message").textContent = "Bienvenue, " + displayName;
 		$("welcome-message").hidden = false;
 		$("auth-view").hidden = true;
@@ -354,7 +355,8 @@
 	$("auth-form").addEventListener("submit", async function (e) {
 		e.preventDefault();
 		const email = $("auth-email").value.trim();
-		const displayName = $("auth-display-name").value.trim();
+		const displayName = $("auth-display-name").value.trim().toLocaleUpperCase("fr-FR");
+		const firstName = normalizePrenom($("auth-first-name").value).replace(/\s+/g, "-");
 		const password = $("auth-password").value;
 		const button = $("auth-submit");
 		button.disabled = true;
@@ -364,7 +366,7 @@
 				const { data: signUpData, error } = await supabaseClient.auth.signUp({
 					email: email,
 					password: password,
-					options: { data: { display_name: displayName } }
+					options: { data: { display_name: displayName, first_name: firstName } }
 				});
 				if (error) throw error;
 				if (signUpData.session) await showApplication(signUpData.user);
