@@ -48,8 +48,9 @@
 
 	async function showApplication(user) {
 		currentUser = user;
-		const displayName = user.user_metadata.first_name || user.user_metadata.display_name || user.email;
-		$("welcome-message").textContent = "Bienvenue, " + displayName;
+		const fullName = [user.user_metadata.first_name, user.user_metadata.display_name]
+			.filter(Boolean).join(" ") || user.email;
+		$("welcome-message").textContent = "Bienvenue, " + fullName;
 		$("welcome-message").hidden = false;
 		$("auth-view").hidden = true;
 		$("app-view").hidden = false;
@@ -139,10 +140,10 @@
 	async function loadResponsibles() {
 		const { data: profiles, error } = await supabaseClient
 			.from("profiles")
-			.select("display_name")
-			.order("display_name");
+			.select("first_name")
+			.order("first_name");
 		if (error) throw error;
-		fillSelect($("responsable"), profiles.map((profile) => profile.display_name));
+		fillSelect($("responsable"), profiles.map((profile) => profile.first_name).filter(Boolean));
 	}
 
 	function getMailTemplate(contact) {
@@ -158,7 +159,7 @@
 
 	function render() {
 		const rows = filtered();
-		const displayName = currentUser.user_metadata.display_name || currentUser.email;
+		const displayName = currentUser.user_metadata.first_name || currentUser.email;
 		$("tbody").innerHTML = rows.map((r) =>
 			(() => {
 				const mail = getMailTemplate(r);
