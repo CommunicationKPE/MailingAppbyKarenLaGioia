@@ -4,6 +4,7 @@
 	let data = [];
 	let editingId = null;
 	let currentUser = null;
+	let currentRole = "editor";
 	let authMode = "sign-in";
 
 	/* ---------- Utilitaires ---------- */
@@ -57,7 +58,7 @@
 		$("app-footer").hidden = false;
 		$("sign-out-btn").hidden = false;
 		try {
-			await Promise.all([loadResponsibles(), loadContacts()]);
+			await Promise.all([loadUserRole(), loadResponsibles(), loadContacts()]);
 			render();
 			resetForm();
 		} catch (error) {
@@ -67,6 +68,7 @@
 
 	function showAuthentication() {
 		currentUser = null;
+		currentRole = "editor";
 		data = [];
 		$("auth-view").hidden = false;
 		$("app-view").hidden = true;
@@ -76,6 +78,18 @@
 		$("sign-out-btn").hidden = true;
 		$("auth-password").value = "";
 	}
+
+	async function loadUserRole() {
+		const { data: profile, error } = await supabaseClient
+			.from("profiles")
+			.select("role")
+			.eq("id", currentUser.id)
+			.maybeSingle();
+		if (error) throw error;
+		currentRole = profile && profile.role === "admin" ? "admin" : "editor";
+	}
+
+	const isAdmin = () => currentRole === "admin";
 
 	function toRecord(row) {
 		return {
@@ -140,13 +154,15 @@
 	}
 
 	const responsibleLastNames = new Map();
+	let profiles = [];
 
 	async function loadResponsibles() {
-		const { data: profiles, error } = await supabaseClient
+		const { data: loadedProfiles, error } = await supabaseClient
 			.from("profiles")
-			.select("first_name, display_name")
+			.select("id, first_name, display_name")
 			.order("first_name");
 		if (error) throw error;
+		profiles = loadedProfiles;
 		responsibleLastNames.clear();
 		profiles.forEach((profile) => {
 			if (profile.first_name) responsibleLastNames.set(profile.first_name, profile.display_name || "");
@@ -186,7 +202,7 @@
 				const toggleBtn = isLinkClickable
 					? '<button class="btn-mini' + (r.envoye ? "" : " btn-to-send") + '" data-act="toggle" data-id="' + r.id + '">' + (r.envoye ? "↩︎ Non envoyé" : "✓ Envoyé") + '</button> '
 					: "";
-				const ownerActions = r.userId === currentUser.id
+				const ownerActions = isAdmin() || r.userId === currentUser.id
 					? '<button class="btn-mini" data-act="edit" data-id="' + r.id + '">Modifier</button> ' +
 						'<button class="btn-mini btn-danger" data-act="del" data-id="' + r.id + '">Suppr.</button>'
 					: "";
@@ -216,7 +232,25 @@
 		fillSelect($("f-resp"), resp);
 		fillSelect($("f-qualite"), [...new Set(data.map((r) => r.qualite).filter(Boolean))].sort());
 
-		$("wipe-btn").hidden = !data.some((r) => r.userId === currentUser.id);
+		const contactUserIds = [...new Set(data.map((contact) => contact.userId).filter(Boolean))];
+		const currentDeleteUserId = $("wipe-user").value;
+		const deleteUsers = profiles.filter((profile) => contactUserIds.includes(profile.id));
+		$("wipe-user").innerHTML = '<option value="">Choisir un utilisateur</option>' + deleteUsers.map((profile) =>
+			'<option value="' + esc(profile.id) + '">' + esc(getProfileLabel(profile)) + '</option>'
+		).join("");
+		if (deleteUsers.some((profile) => profile.id === currentDeleteUserId)) $("wipe-user").value = currentDeleteUserId;
+		$("wipe-user").hidden = !isAdmin();
+		$("wipe-btn").hidden = !isAdmin();
+		$("wipe-btn").disabled = !$("wipe-user").value;
+		$("wipe-btn").textContent = $("wipe-user").value
+			? "Supprimer les contacts de " + getProfileLabel(deleteUsers.find((profile) => profile.id === $("wipe-user").value))
+			: "Supprimer les contacts";
+		["csv-btn", "json-btn", "import-json-btn", "print-btn"].forEach((id) => { $(id).hidden = !isAdmin(); });
+	}
+
+	function getProfileLabel(profile) {
+		if (!profile) return "l'utilisateur sélectionné";
+		return [profile.first_name, profile.display_name].filter(Boolean).join(" ") || "Utilisateur";
 	}
 
 	function normalizePrenom(value) {
@@ -349,6 +383,26 @@
 		a.download = name; a.click(); URL.revokeObjectURL(a.href);
 	}
 
+	function importedRecord(value) {
+		if (!value || typeof value !== "object") return null;
+		const email = String(value.email || "").trim().toLowerCase();
+		const nom = String(value.nom || "").trim().toUpperCase();
+		const prenom = String(value.prenom || "").trim();
+		if (!nom || !prenom || !isValidEmail(email)) return null;
+		return {
+			nom: nom,
+			prenom: prenom,
+			genre: value.genre === "F" ? "F" : "M",
+			email: email,
+			qualite: String(value.qualite || "").trim(),
+			responsable: String(value.responsable || "").trim(),
+			envoye: value.envoye === true,
+			dateEnvoi: value.envoye === true && /^\d{4}-\d{2}-\d{2}$/.test(value.dateEnvoi || "")
+				? value.dateEnvoi : "",
+			userId: currentUser.id
+		};
+	}
+
 	$("csv-btn").addEventListener("click", function () {
 		const head = ["Nom", "Prénom", "Genre", "E-mail", "Qualité", "Chargé(e) de l'envoi", "Mail envoyé", "Date d'envoi"];
 		const cell = (v) => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
@@ -362,12 +416,57 @@
 		download("kpe-contacts-" + today() + ".json", JSON.stringify(data, null, 2), "application/json");
 	});
 
+	$("import-json-btn").addEventListener("click", () => $("import-json-input").click());
+	$("import-json-input").addEventListener("change", async function () {
+		const file = this.files[0];
+		this.value = "";
+		if (!file) return;
+		try {
+			const parsed = JSON.parse(await file.text());
+			const records = Array.isArray(parsed) ? parsed : parsed.contacts;
+			if (!Array.isArray(records)) throw new Error("Le fichier doit contenir une liste de contacts.");
+			const existingEmails = new Set(data.map((record) => record.email.toLowerCase()));
+			const imported = [];
+			let invalid = 0, duplicates = 0;
+			records.forEach((value) => {
+				const record = importedRecord(value);
+				if (!record) { invalid++; return; }
+				if (existingEmails.has(record.email)) { duplicates++; return; }
+				existingEmails.add(record.email);
+				imported.push(record);
+			});
+			if (!imported.length) {
+				alert("Aucun nouveau contact valide à importer." + (duplicates ? " Les doublons ont été ignorés." : ""));
+				return;
+			}
+			const { data: inserted, error } = await supabaseClient.from("contacts")
+				.insert(imported.map(toDatabaseRow)).select();
+			if (error) throw error;
+			data.push(...inserted.map(toRecord));
+			render();
+			toast(imported.length + " contact" + (imported.length > 1 ? "s" : "") + " importé" + (imported.length > 1 ? "s" : ""));
+			const details = [];
+			if (duplicates) details.push(duplicates + " doublon" + (duplicates > 1 ? "s" : "") + " ignoré" + (duplicates > 1 ? "s" : ""));
+			if (invalid) details.push(invalid + " ligne" + (invalid > 1 ? "s" : "") + " invalide" + (invalid > 1 ? "s" : ""));
+			if (details.length) alert("Import terminé. " + details.join(" et ") + ".");
+		} catch (error) {
+			console.error(error);
+			alert("Impossible d'importer ce fichier JSON : " + (error.message || "format invalide."));
+		}
+	});
+
+	$("wipe-user").addEventListener("change", render);
 	$("wipe-btn").addEventListener("click", async function () {
-		if (!confirm("ATTENTION ! Effacer tous les contacts que vous avez créés ? Exportez une sauvegarde avant. car cette action est irréversible.")) return;
-		const { error } = await supabaseClient.from("contacts").delete().eq("user_id", currentUser.id);
+		if (!isAdmin()) return;
+		const userId = $("wipe-user").value;
+		if (!userId) return;
+		const profile = profiles.find((item) => item.id === userId);
+		const label = getProfileLabel(profile);
+		if (!confirm("ATTENTION ! Vous allez supprimer définitivement tous les contacts de " + label + ". Cette action est irréversible.")) return;
+		const { error } = await supabaseClient.from("contacts").delete().eq("user_id", userId);
 		if (error) { showDatabaseError(error); return; }
-		data = data.filter((contact) => contact.userId !== currentUser.id);
-		render(); toast("Vos contacts ont été effacés");
+		data = data.filter((contact) => contact.userId !== userId);
+		render(); toast("Les contacts de " + label + " ont été supprimés");
 	});
 
 	/* ---------- Authentification ---------- */

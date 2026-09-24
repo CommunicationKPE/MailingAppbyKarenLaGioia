@@ -48,7 +48,7 @@ const EMAIL_TEMPLATES = {
 			"Il y a des projets qui naissent très vite… Et il y en a d'autres qui demandent des mois de travail,\n" +
 			"de doutes, de remises en question, mais aussi énormément de passion.\n" +
 			"Aujourd'hui, j'ai enfin le bonheur de t'annoncer que l’aventure Katy Perry EXPERIENCE by Karen La Gioia devient réalité.\n" +
-			"Puisque le 28 novembre 2026 à 21h00, nous présenterons officiellement lors de notre première au Bunker Paillettes.\n\n" +
+			"Puisque le 28 novembre 2026 à 21h00, nous serons officiellement au Bunker Paillettes pour notre première.\n\n" +
 			"BUNKER PAILLETTES\n" +
 			"420 RUE DES BOURRELIERS\n" +
 			"59320 HALLENNES-LEZ-HAUBOURDIN\n\n" +

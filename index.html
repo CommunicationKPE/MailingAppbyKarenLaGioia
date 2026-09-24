@@ -123,10 +123,15 @@
       <div class="empty" id="empty">Aucun contact enregistré pour le moment.</div>
     </div>
     <div class="actions no-print">
-      <button class="btn-ghost" id="csv-btn">⬇︎ Export CSV (Excel)</button>
-      <button class="btn-ghost" id="json-btn">⬇︎ Sauvegarde JSON</button>
-      <button class="btn-ghost" onclick="window.print()">🖨 Imprimer / PDF</button>
-      <button class="btn-danger" id="wipe-btn" hidden>Effacer mes contacts</button>
+      <button class="btn-ghost" id="csv-btn" hidden>⬇︎ Export CSV (Excel)</button>
+      <button class="btn-ghost" id="json-btn" hidden>⬇︎ Sauvegarde JSON</button>
+      <button class="btn-ghost" id="import-json-btn" hidden>⬆︎ Importer JSON</button>
+      <input id="import-json-input" type="file" accept="application/json,.json" hidden />
+      <button class="btn-ghost" id="print-btn" onclick="window.print()" hidden>🖨 Imprimer / PDF</button>
+      <select id="wipe-user" hidden aria-label="Utilisateur dont les contacts seront supprimés">
+        <option value="">Choisir un utilisateur</option>
+      </select>
+      <button class="btn-danger" id="wipe-btn" hidden disabled>Supprimer les contacts</button>
     </div>
   </section>
 </main>
