@@ -1,5 +1,3 @@
-const AFFICHE_URL = "https://communicationkpe.github.io/MailingAppbyKarenLaGioia/assets/InvitationBunkerPaillettes.png";
-
 const EMAIL_TEMPLATES = {
 	"Officiels / Programmateurs / Élus": {
 		subject: "Invitation personnelle – Soirée de lancement de Katy Perry EXPERIENCE by Karen La Gioia",
@@ -16,8 +14,9 @@ const EMAIL_TEMPLATES = {
 			"Votre présence serait un véritable honneur pour notre équipe.\n\n" +
 			"Au-delà d'un simple concert, cette soirée marquera la première représentation publique \n" +
 			"d'un projet qui nous anime depuis de nombreux mois et auquel nous consacrons toute notre énergie.\n\n" +
-			"Vous trouverez ci-joint votre carton d'invitation ici :\n" + AFFICHE_URL + "\n" +
-			"L'entrée est gratuite.\n\n" +
+			"L'entrée est gratuite.\n" +
+			"Afin de nous permettre d’anticiper le nombre d’invités et de garantir à chacun un accueil dans les meilleures conditions,\n" +
+			"nous vous remercions de bien vouloir confirmer votre présence avant le 1er novembre 2026.\n\n" +
 			"En espérant avoir le plaisir de vous accueillir le 28 novembre prochain,\n" + 
 			"je vous remercie sincèrement {civilite} {prenom} {nom} de l'intérêt que vous portez à notre démarche.\n" +
 			"Bien Cordialement,\n\n{responsable} {responsableNom} \n Pour le projet : Katy Perry EXPERIENCE by Karen La Gioia"
@@ -35,8 +34,9 @@ const EMAIL_TEMPLATES = {
 			"Cette première représentation est importante pour toute l'équipe. \n" +
 			"Elle marque le début de la diffusion du spectacle et le commencement d'une nouvelle étape.\n" +
 			"Ce serait un réel plaisir de t'avoir parmi nous pour vivre ce moment particulier.\n\n" +
-			"Le carton d'invitation est à consulter ici :\n" + AFFICHE_URL + "\n" +
-			"L'entrée est gratuite.\n\n" +
+			"L'entrée est gratuite.\n" +
+			"Afin de nous permettre d’anticiper le nombre d’invités et de garantir à chacun un accueil dans les meilleures conditions,\n"+
+			"merci de bien vouloir confirmer ta présence avant le 1er novembre 2026.\n\n" +
 			"Au-delà du spectacle, ce sera surtout l'occasion de partager un bon moment.\n" +
 			"Merci d'écrire l'histoire avec nous.\n" +
 			"À très bientôt !\n" +
@@ -55,8 +55,9 @@ const EMAIL_TEMPLATES = {
 			"J'aimerais vraiment que tu sois là toi et tes proches, avec nous.\n" +
 			"Parce que cette soirée représente énormément après tout le chemin parcouru.\n" +
 			"Et parce que j'ai envie de partager ce moment avec ceux qui nous soutiennent depuis le début.\n\n" +
-			"Tu trouveras le carton d'invitation ici :\n" + AFFICHE_URL + "\n" +
 			"L'entrée est gratuite.\n\n" +
+			"Afin de nous permettre d'anticiper le nombre d'invités et de garantir à chacun un accueil dans les meilleures conditions,\n"+
+			"merci de me confirmer ta présence avant le 1er novembre 2026. Si tu viens accompagné{e}, merci de préciser également le nombre de personnes présentes. \n\n" +
 			"J'espère avoir le plaisir de t’y retrouver le 28 novembre.\n" +			
 			"À très bientôt,\n\n{responsable} \n Pour le projet : Katy Perry EXPERIENCE by Karen La Gioia"
 	},
@@ -64,7 +65,6 @@ const EMAIL_TEMPLATES = {
 		subject: "Invitation Katy Perry EXPERIENCE",
 		body: "Bonjour {prenom},\n\n" +
 			"Nous avons le plaisir de vous inviter...\n\n" +
-			"Le carton d'invitation est à consulter ici :\n" + AFFICHE_URL + "\n\n" +
 			"Bien cordialement,\n{responsable}"
 	}
 };
