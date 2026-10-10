@@ -1,6 +1,6 @@
 const EMAIL_TEMPLATES = {
 	"Officiels / Programmateurs / Élus": {
-		subject: "Invitation personnelle – Soirée de lancement - Katy Perry EXPERIENCE by Karen La Gioia",
+		subject: "Invitation personnelle – Soirée de lancement – Katy Perry EXPERIENCE by Karen La Gioia",
 		body: "Bonjour {civilite} {prenom} {nom},\n\n" +
 			"Après plusieurs mois de création, de préparation et de travail artistique,\n" + 
 			"j'ai le plaisir de vous annoncer officiellement la naissance de notre nouveau spectacle :\n\n" +
