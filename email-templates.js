@@ -16,9 +16,8 @@ const EMAIL_TEMPLATES = {
 			"Votre présence serait un véritable honneur pour notre équipe.\n\n" +
 			"Au-delà d'un simple concert, cette soirée marquera la première représentation publique \n" +
 			"d'un projet qui nous anime depuis de nombreux mois et auquel nous consacrons toute notre énergie.\n\n" +
-			"L'entrée est gratuite.\n" +
-			"Afin de nous permettre d’anticiper le nombre d’invités et de garantir à chacun un accueil dans les meilleures conditions,\n" +
-			"nous vous remercions de bien vouloir confirmer votre présence avant le 1er novembre 2026.\n\n" +
+			"L'entrée est gratuite.\n\n" +
+			"Merci de confirmer votre présence en répondant à ce mail avant le 1er novembre 2026, en précisant le nombre de personnes qui vous accompagneront.\n\n" +
 			"En espérant avoir le plaisir de vous accueillir le 28 novembre prochain,\n" + 
 			"je vous remercie sincèrement {civilite} {prenom} {nom} de l'intérêt que vous portez à notre démarche.\n" +
 			"Bien Cordialement,\n\n{responsable} {responsableNom} \n Pour le projet : Katy Perry EXPERIENCE by Karen La Gioia"
@@ -38,9 +37,8 @@ const EMAIL_TEMPLATES = {
 			"Cette première représentation est importante pour toute l'équipe. \n" +
 			"Elle marque le début de la diffusion du spectacle et le commencement d'une nouvelle étape.\n" +
 			"Ce serait un réel plaisir de t'avoir parmi nous pour vivre ce moment particulier.\n\n" +
-			"L'entrée est gratuite.\n" +
-			"Afin de nous permettre d’anticiper le nombre d’invités et de garantir à chacun un accueil dans les meilleures conditions,\n"+
-			"merci de bien vouloir confirmer ta présence avant le 1er novembre 2026.\n\n" +
+			"L'entrée est gratuite.\n\n" +
+			"Merci de me confirmer ta présence en répondant à ce mail avant le 8 novembre 2026, en précisant si tu viens accompagné(e).\n\n" +
 			"Au-delà du spectacle, ce sera surtout l'occasion de partager un bon moment.\n" +
 			"Merci d'écrire l'histoire avec nous.\n" +
 			"À très bientôt !\n" +
@@ -62,8 +60,7 @@ const EMAIL_TEMPLATES = {
 			"Parce que cette soirée représente énormément après tout le chemin parcouru.\n" +
 			"Et parce que j'ai envie de partager ce moment avec ceux qui nous soutiennent depuis le début.\n\n" +
 			"L'entrée est gratuite.\n\n" +
-			"Afin de nous permettre d'anticiper le nombre d'invités et de garantir à chacun un accueil dans les meilleures conditions,\n"+
-			"merci de me confirmer ta présence avant le 1er novembre 2026. Si tu viens accompagné{e}, merci de préciser également le nombre de personnes présentes. \n\n" +
+			"Dis-moi simplement en répondant à ce mail avant le 22 novembre 2026 si tu viens, et combien vous serez au total.\n\n" +
 			"J'espère avoir le plaisir de t’y retrouver le 28 novembre.\n" +			
 			"À très bientôt,\n\n{responsable} \n Pour le projet : Katy Perry EXPERIENCE by Karen La Gioia"
 	},
