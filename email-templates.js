@@ -10,6 +10,8 @@ const EMAIL_TEMPLATES = {
 			"BUNKER PAILLETTES\n" +
 			"420 RUE DES BOURRELIERS\n" +
 			"59320 HALLENNES-LEZ-HAUBOURDIN\n\n" +
+			"Retrouvez les informations de la soirée sur l'événement Facebook :\n" +
+			"https://fb.me/e/8q9lX0wgp\n\n" +
 			"À cette occasion, je souhaiterais très sincèrement vous compter parmi nos invités.\n" +			
 			"Votre présence serait un véritable honneur pour notre équipe.\n\n" +
 			"Au-delà d'un simple concert, cette soirée marquera la première représentation publique \n" +
@@ -31,6 +33,8 @@ const EMAIL_TEMPLATES = {
 			"BUNKER PAILLETTES\n" +
 			"420 RUE DES BOURRELIERS\n" +
 			"59320 HALLENNES-LEZ-HAUBOURDIN\n\n" +			
+			"Retrouve les informations de la soirée sur l'événement Facebook :\n" + 
+			"https://fb.me/e/8q9lX0wgp\n\n" +
 			"Cette première représentation est importante pour toute l'équipe. \n" +
 			"Elle marque le début de la diffusion du spectacle et le commencement d'une nouvelle étape.\n" +
 			"Ce serait un réel plaisir de t'avoir parmi nous pour vivre ce moment particulier.\n\n" +
@@ -52,6 +56,8 @@ const EMAIL_TEMPLATES = {
 			"BUNKER PAILLETTES\n" +
 			"420 RUE DES BOURRELIERS\n" +
 			"59320 HALLENNES-LEZ-HAUBOURDIN\n\n" +
+			"Retrouve toutes les infos sur l'événement Facebook :\n" +
+			"https://fb.me/e/8q9lX0wgp\n\n" +
 			"J'aimerais vraiment que tu sois là toi et tes proches, avec nous.\n" +
 			"Parce que cette soirée représente énormément après tout le chemin parcouru.\n" +
 			"Et parce que j'ai envie de partager ce moment avec ceux qui nous soutiennent depuis le début.\n\n" +
