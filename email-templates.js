@@ -10,7 +10,7 @@ const EMAIL_TEMPLATES = {
 			"BUNKER PAILLETTES\n" +
 			"420 RUE DES BOURRELIERS\n" +
 			"59320 HALLENNES-LEZ-HAUBOURDIN\n\n" +
-			"Retrouvez les informations de la soirée sur l'événement Facebook :\n" +
+			"Retrouvez les informations de la soirée sur l'événement Facebook:\n" +
 			"https://fb.me/e/8q9lX0wgp\n\n" +
 			"À cette occasion, je souhaiterais très sincèrement vous compter parmi nos invités.\n" +			
 			"Votre présence serait un véritable honneur pour notre équipe.\n\n" +
